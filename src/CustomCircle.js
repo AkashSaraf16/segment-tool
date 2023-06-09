@@ -1,14 +1,15 @@
 import Konva from "konva";
 
-export default function CustomCircle(points, intersectingLines, lineLayer, buttonRef) {
+export default function CustomCircle(points, intersectingLines, lineLayer, circleLayer, buttonRef,group) {
 
 	function handleCircleClick(event) {
 		const currentCircle = event.target;
 		const filteredLines = lineLayer.children.filter((eachLine) => {
 			const [x1, y1, x2, y2] = eachLine.points();
 			if (
-				(x1 === currentCircle.x() && y1 === currentCircle.y()) ||
-				(x2 === currentCircle.x() && y2 === currentCircle.y())
+				(eachLine.group === currentCircle.group) &&
+				((x1 === currentCircle.x() && y1 === currentCircle.y()) ||
+				(x2 === currentCircle.x() && y2 === currentCircle.y()))
 			) {
 				return true;
 			}
@@ -24,6 +25,8 @@ export default function CustomCircle(points, intersectingLines, lineLayer, butto
 		let startPoints = null;
 		let endPoints = null;
 		let lineCircle = null;
+		if(intersectingLines.length<=1)
+			return;
 		intersectingLines.forEach((eachLine) => {
 			if (eachLine.startCircle._id === currentCircle._id) {
 				endPoints = eachLine.points().slice(2);
@@ -39,6 +42,7 @@ export default function CustomCircle(points, intersectingLines, lineLayer, butto
 			stroke: 'black',
 			strokeWidth: 2,
 		});
+		newLine.group = lineCircle.group;
 		newLine.startCircle = lineCircle;
 		currentCircle.remove();
 		lineLayer.add(newLine);
@@ -47,6 +51,7 @@ export default function CustomCircle(points, intersectingLines, lineLayer, butto
 
 	function handleCircleMove(event) {
 		const currentCircle = event.target;
+		findNearestPoint(currentCircle);
 		intersectingLines.forEach((eachLine) => {
 			if (eachLine.startCircle._id === currentCircle._id) {
 				const [, , x2, y2] = eachLine.points();
@@ -63,6 +68,22 @@ export default function CustomCircle(points, intersectingLines, lineLayer, butto
 		lineLayer.batchDraw();
 	};
 
+	function findNearestPoint(currentCircle) {
+		const [x, y] = [currentCircle.x(), currentCircle.y()];
+		circleLayer.children.map((eachCircle) => {
+		  if (
+			eachCircle._id !== currentCircle._id &&
+			eachCircle.group !== currentCircle.group &&
+			Math.abs(eachCircle.x() - x) <= 7 &&
+			Math.abs(eachCircle.y() - y) <= 7
+		  ) {
+			currentCircle.x(eachCircle.x());
+			currentCircle.y(eachCircle.y());
+		  }
+		});
+		return false;
+	  }
+
 	const circleStart = new Konva.Circle({
 		x: points[0],
 		y: points[1],
@@ -70,6 +91,7 @@ export default function CustomCircle(points, intersectingLines, lineLayer, butto
 		fill: 'red',
 		draggable: true,
 	});
+	circleStart.group = group;
 
 	circleStart.on('mousedown', handleCircleClick);
 
