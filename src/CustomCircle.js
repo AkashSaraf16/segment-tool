@@ -38,6 +38,7 @@ export default function CustomCircle(points, intersectingLines, lineLayer, circl
 			}
 		});
 		const newLine = new Konva.Line({
+			name:`seg${group+1}`,
 			points: [...startPoints, ...endPoints],
 			stroke: 'black',
 			strokeWidth: 2,
@@ -85,6 +86,7 @@ export default function CustomCircle(points, intersectingLines, lineLayer, circl
 	  }
 
 	const circleStart = new Konva.Circle({
+		name:`seg${group+1}`,
 		x: points[0],
 		y: points[1],
 		radius: 4,

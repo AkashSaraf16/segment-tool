@@ -1,6 +1,7 @@
 import Konva from "konva";
 export default function CustomLine(points,group) {
 	const line = new Konva.Line({
+		name:`seg${group+1}`,
 		points: [
 			...points
 		],

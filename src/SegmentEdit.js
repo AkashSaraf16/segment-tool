@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Konva from 'konva';
 import CustomLine from './CustomLine.js';
+import { EditPanelGrid, Panel } from './style.js';
 
 // import hullPoints from './hull.js';
 import hullPoints, { massHullPoints } from './hull.js'
@@ -16,15 +17,15 @@ export default function SegmentEdit() {
 	useEffect(() => {
 		const stage = new Konva.Stage({
 			container: containerRef.current,
-			width: window.innerWidth,
-			height: window.innerHeight,
+			width: 600,
+			height: 600,
 		});
 		const lineLayer = new Konva.Layer();
 		const circleLayer = new Konva.Layer();
 		stage.add(lineLayer);
 		stage.add(circleLayer);
 
-		massHullPoints.slice(0,2).forEach((hullPoints,index)=>{
+		massHullPoints.slice(0,massHullPoints.length).forEach((hullPoints,index)=>{
 			for (let i = 0; i < hullPoints.length - 1; i++) {
 				const line = CustomLine([hullPoints[i][0], hullPoints[i][1], hullPoints[i + 1][0], hullPoints[i + 1][1]],index);
 				const circleStart = CustomCircle([hullPoints[i][0], hullPoints[i][1]], intersectingLines, lineLayer, circleLayer, buttonRef,index);
@@ -47,10 +48,34 @@ export default function SegmentEdit() {
 		isDelete = !isDelete;
 	}
 
+	function deleteNodehandler(event){
+		const input = event.target.innerText;
+		const nodes = stageRef.current?.find('.seg'+input);
+		nodes.forEach(node=>node.destroy());
+	}
+
+	function mouseOutHandler(event){
+		const input = event.target.innerText;
+		const nodes = stageRef.current?.find('.seg'+input);
+		nodes.forEach(node=>node.opacity(1));
+	}
+
+	function mouseOverHandler(event){
+		const input = event.target.innerText;
+		const nodes = stageRef.current?.find('.seg'+input);
+		nodes.forEach(node=>node.opacity(0));
+	}
+
 	return (
 		<div>
 			<div ref={containerRef} />
 			<button onClick={deleteHandler} ref={buttonRef}>Enable delete points</button>
+			<EditPanelGrid>
+				<h3>Do you want to delete any segments?</h3>
+				{massHullPoints.map((hullPoints,index)=>{
+					return <Panel onClick={deleteNodehandler} onMouseOver={mouseOverHandler} onMouseOut={mouseOutHandler} key={index}>{index+1}</Panel>
+				})}
+			</EditPanelGrid>
 		</div>
 	);
 };
