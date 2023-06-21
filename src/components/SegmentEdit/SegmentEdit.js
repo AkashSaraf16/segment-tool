@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import Konva from 'konva';
-import CustomLine from '../CustomLine/';
+import CustomLine from '../DrawLine';
 import { EditPanelGrid, Panel } from '../../style.js';
 
 import { massHullPoints } from '../../hull.js';
-import CustomCircle from '../CustomCircle/';
+import CustomCircle from '../DrawCircle';
 
 export default function SegmentEdit() {
   const containerRef = useRef(null);
@@ -96,7 +96,11 @@ export default function SegmentEdit() {
 
   return (
     <div>
-      <div ref={containerRef} />
+      <div ref={containerRef}>
+		{massHullPoints.map((eachHullPoints, index) => {
+
+		})}
+	  </div>
       <button onClick={deleteHandler} ref={buttonRef}>
         Enable delete points
       </button>

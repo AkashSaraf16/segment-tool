@@ -1,6 +1,6 @@
 import Konva from "konva";
 
-export default function CustomCircle(points, intersectingLines, lineLayer, circleLayer, buttonRef,group) {
+export default function DrawCircle(points, intersectingLines, lineLayer, circleLayer, buttonRef,group) {
 
 	function handleCircleClick(event) {
 		const currentCircle = event.target;
