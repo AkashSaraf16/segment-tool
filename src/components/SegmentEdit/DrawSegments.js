@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { massHullPoints } from '../../hull.js';
 import { Stage, Layer, Group, Line, Circle } from 'react-konva';
 import DrawLine from '../DrawLine/DrawLine';
+import DrawCircle from '../DrawCircle/DrawCircle.js';
 
 function DrawSegments() {
   const lineLayerRef = useRef(null);
@@ -26,7 +27,17 @@ function DrawSegments() {
         ))}
       </Layer>
       <Layer ref={circleLayerRef} name='circle'>
-        {/* <Circle x={200} y={200} radius={50} fill='blue' /> */}
+        {massHullPoints.map((eachHullPoints, eachHullIndex) => (
+          <Group key={eachHullIndex}>
+            {eachHullPoints.map((eachGroupPoints, eachIndex, eachGroupArr) => (
+              <DrawCircle
+                key={eachIndex}
+                points={[eachGroupPoints, eachGroupArr[eachIndex + 1]]}
+                group={eachHullIndex}
+              />
+            ))}
+          </Group>
+        ))}
       </Layer>
     </Stage>
   );
