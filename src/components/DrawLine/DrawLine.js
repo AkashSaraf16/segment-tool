@@ -1,5 +1,5 @@
 import { Line } from 'react-konva';
-export default function DrawLine({ points, group, linexIndex }) {
+export default function DrawLine({ points, group }) {
   const [start, end] = points;
   if (!end) return;
   return (
@@ -9,7 +9,6 @@ export default function DrawLine({ points, group, linexIndex }) {
       stroke={'black'}
       strokeWidth={2}
       startCircle={'hello'}
-      lineIndex={linexIndex}
     />
   );
 }
