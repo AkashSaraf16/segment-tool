@@ -1,10 +1,10 @@
-import SegmentEdit from './SegmentEdit';
+import SegmentEdit from './components/SegmentEdit';
 function App() {
-	return (
-		<div className="App">
-			<SegmentEdit />
-		</div>
-	);
+  return (
+    <div className='App'>
+      <SegmentEdit />
+    </div>
+  );
 }
 
 export default App;
