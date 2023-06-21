@@ -20,8 +20,12 @@ export default function SegmentEdit() {
 			width: 600,
 			height: 600,
 		});
-		const lineLayer = new Konva.Layer();
-		const circleLayer = new Konva.Layer();
+		const lineLayer = new Konva.Layer({
+			name:'LineLayer'
+		});
+		const circleLayer = new Konva.Layer({
+			name:'CircleLayer'
+		});
 		stage.add(lineLayer);
 		stage.add(circleLayer);
 
@@ -66,6 +70,15 @@ export default function SegmentEdit() {
 		nodes.forEach(node=>node.opacity(0));
 	}
 
+	function showLinesPoints(event){
+		const [lineLayer] = stageRef.current?.find('.LineLayer');
+		const lines = lineLayer.children;
+		let linesPoints=[];
+		for(const line of lines)
+			linesPoints.push(line.attrs.points);
+		console.log(linesPoints);
+	}
+
 	return (
 		<div>
 			<div ref={containerRef} />
@@ -76,6 +89,9 @@ export default function SegmentEdit() {
 					return <Panel onClick={deleteNodehandler} onMouseOver={mouseOverHandler} onMouseOut={mouseOutHandler} key={index}>{index+1}</Panel>
 				})}
 			</EditPanelGrid>
+			<div>
+				<button onClick={showLinesPoints}>Save</button>
+			</div>
 		</div>
 	);
 };
