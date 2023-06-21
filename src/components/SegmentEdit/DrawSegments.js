@@ -3,13 +3,14 @@ import { massHullPoints } from '../../hull.js';
 import { Stage, Layer, Group, Line, Circle } from 'react-konva';
 import DrawLine from '../DrawLine/DrawLine';
 import DrawCircle from '../DrawCircle/DrawCircle.js';
+import Konva from 'konva';
 
 function DrawSegments() {
   const lineLayerRef = useRef(null);
   const circleLayerRef = useRef(null);
 
   useEffect(() => {
-    console.log(lineLayerRef.current);
+    console.log(Konva);
   }, []);
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
@@ -21,6 +22,7 @@ function DrawSegments() {
                 key={eachIndex}
                 points={[eachGroupPoints, eachGroupArr[eachIndex + 1]]}
                 group={eachHullIndex}
+                linexIndex={`${eachIndex}${eachHullIndex}`}
               />
             ))}
           </Group>
@@ -34,6 +36,8 @@ function DrawSegments() {
                 key={eachIndex}
                 points={[eachGroupPoints, eachGroupArr[eachIndex + 1]]}
                 group={eachHullIndex}
+                lineRefs={lineLayerRef}
+                circleIndex={`${eachIndex}${eachHullIndex}`}
               />
             ))}
           </Group>

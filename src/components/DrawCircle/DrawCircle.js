@@ -1,17 +1,20 @@
 import Konva from 'konva';
+import { useState } from 'react';
 import { Circle } from 'react-konva';
 
 export default function DrawCircle({
   points,
-  intersectingLines,
+  group,
+  lineRefs,
   lineLayer,
   circleLayer,
-  buttonRef,
-  group,
+  intersectingLines,
 }) {
+  const [filteredLines, setFilteredLines] = useState({});
   function handleCircleClick(event) {
     const currentCircle = event.target;
-    const filteredLines = lineLayer.children.filter((eachLine) => {
+    const allLines = lineRefs.current.find('Line');
+    const currentFilteredLines = allLines.filter((eachLine) => {
       const [x1, y1, x2, y2] = eachLine.points();
       if (
         eachLine.group === currentCircle.group &&
@@ -22,10 +25,10 @@ export default function DrawCircle({
       }
       return false;
     });
-    intersectingLines = filteredLines;
-    if (buttonRef.current.innerText === 'Disable delete points') {
-      removePoints(intersectingLines, currentCircle);
-    }
+    const currentTrack = {};
+    currentTrack.circle = [currentCircle.x(), currentCircle.y()];
+    currentTrack.lines = currentFilteredLines;
+    setFilteredLines((prevState) => ({ ...prevState, ...currentTrack }));
   }
 
   function removePoints(intersectingLines, currentCircle) {
@@ -58,21 +61,30 @@ export default function DrawCircle({
 
   function handleCircleMove(event) {
     const currentCircle = event.target;
-    findNearestPoint(currentCircle);
-    intersectingLines.forEach((eachLine) => {
-      if (eachLine.startCircle._id === currentCircle._id) {
-        const [, , x2, y2] = eachLine.points();
+    filteredLines.lines.forEach((eachLine) => {
+      const [x1, y1, x2, y2] = eachLine.points();
+      if (x1 === filteredLines.circle[0] && y1 === filteredLines.circle[1]) {
         eachLine.points([currentCircle.x(), currentCircle.y(), x2, y2]);
+        filteredLines.circle = [currentCircle.x(), currentCircle.y()];
       } else {
-        eachLine.points([
-          eachLine.startCircle.x(),
-          eachLine.startCircle.y(),
-          currentCircle.x(),
-          currentCircle.y(),
-        ]);
+        eachLine.points([x1, y1, currentCircle.x(), currentCircle.y()]);
       }
     });
-    lineLayer.batchDraw();
+    // findNearestPoint(currentCircle);
+    // intersectingLines.forEach((eachLine) => {
+    //   if (eachLine.startCircle._id === currentCircle._id) {
+    //     const [, , x2, y2] = eachLine.points();
+    //     eachLine.points([currentCircle.x(), currentCircle.y(), x2, y2]);
+    //   } else {
+    //     eachLine.points([
+    //       eachLine.startCircle.x(),
+    //       eachLine.startCircle.y(),
+    //       currentCircle.x(),
+    //       currentCircle.y(),
+    //     ]);
+    //   }
+    // });
+    // lineLayer.batchDraw();
   }
 
   function findNearestPoint(currentCircle) {
@@ -91,19 +103,6 @@ export default function DrawCircle({
     return false;
   }
 
-  const circleStart = new Konva.Circle({
-    name: `seg${group + 1}`,
-    x: points[0],
-    y: points[1],
-    radius: 4,
-    fill: 'red',
-    draggable: true,
-  });
-  circleStart.group = group;
-
-  circleStart.on('mousedown', handleCircleClick);
-
-  circleStart.on('dragmove', handleCircleMove);
   const [start, end] = points;
   if (!end) return;
 
@@ -115,7 +114,8 @@ export default function DrawCircle({
       fill='red'
       draggable={true}
       onMouseDown={handleCircleClick}
-      onMouseMove={handleCircleMove}
+      onDragMove={handleCircleMove}
+      group={group}
     />
   );
 }
