@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { massHullPoints } from '../../hull.js';
-import { Stage, Layer, Group, Line, Circle } from 'react-konva';
-import DrawLine from '../DrawLine/CustomLine.js';
-import DrawCircle from '../DrawCircle/DrawCircle.js';
+import { Stage, Layer, Group} from 'react-konva';
+import DrawLine from '../CustomLine/CustomLine.js';
+import { EditPanel } from '../EditPanel/EditPanel.js';
 
 function DrawSegments() {
   const StageRef = useRef(null);
@@ -11,6 +11,21 @@ function DrawSegments() {
   const [hullPointsState, setHullPointsState] = useState(massHullPoints);
   const [shouldDelete, setShouldDelete] = useState(false);
 
+  function deleteHandler(){
+		const newHullState = [];
+		const lineGroup = StageRef.current.children[0].children;
+		lineGroup.forEach((eachGroup, index) => {
+		  newHullState[index] = [];
+		  const allLinePoints = eachGroup.children;
+		  allLinePoints.forEach((eachLine) => {
+			if (eachLine.className === 'Line') {
+			  newHullState[index].push(eachLine.points());
+			}
+		  });
+		});
+		console.log(newHullState);
+		setShouldDelete((prevState) => !prevState);
+  }
   useEffect(() => {
     console.log(hullPointsState);
   }, [hullPointsState]);
@@ -23,7 +38,7 @@ function DrawSegments() {
       >
         <Layer ref={lineLayerRef} name='line'>
           {hullPointsState.map((eachHullPoints, eachHullIndex) => (
-            <Group key={eachHullIndex}>
+            <Group key={eachHullIndex} name={`seg${eachHullIndex+1}`}>
               {eachHullPoints.map((eachGroupPoints, eachIndex) => (
                 <DrawLine
                   key={eachIndex}
@@ -59,23 +74,9 @@ function DrawSegments() {
       <input
         type='button'
         value={`${shouldDelete ? 'disable' : 'enable'} delete points`}
-        onClick={(event) => {
-          const newHullState = [];
-          const lineGroup = StageRef.current.children[0].children;
-          lineGroup.forEach((eachGroup, index) => {
-            newHullState[index] = [];
-            const allLinePoints = eachGroup.children;
-            allLinePoints.forEach((eachLine) => {
-              if (eachLine.className === 'Line') {
-                newHullState[index].push(eachLine.points());
-              }
-            });
-          });
-          console.log(newHullState);
-          // setHullPointsState(newHullState);
-          setShouldDelete((prevState) => !prevState);
-        }}
+        onClick={deleteHandler}
       />
+	  <EditPanel massHullPoints={hullPointsState} stageRef={StageRef}/>
     </>
   );
 }

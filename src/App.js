@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import SegmentEdit from './components/SegmentEdit';
-import DrawSegments from './components/SegmentEdit/DrawSegments';
+import DrawSegments from './components/DrawSegments/DrawSegments';
 function App() {
   return (
     <div className='App'>

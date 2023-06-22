@@ -1,5 +1,5 @@
 import { Line } from 'react-konva';
-import DrawCircle from '../DrawCircle/CutsomCircle';
+import DrawCircle from '../CustomCircle/CutsomCircle';
 export default function DrawLine({
   points,
   group,
