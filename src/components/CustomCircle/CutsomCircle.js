@@ -139,7 +139,7 @@ export default function DrawCircle({
       y={points[1]}
       radius={4}
       fill='red'
-      draggable={true}
+      draggable={shouldDelete?false:true}
       onMouseDown={handleCircleClick}
       onDragMove={handleCircleMove}
       onMouseUp={handleMouseUp}
