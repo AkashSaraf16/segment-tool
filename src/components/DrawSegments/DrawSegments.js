@@ -3,12 +3,14 @@ import { massHullPoints } from '../../hull.js';
 import { Stage, Layer, Group} from 'react-konva';
 import DrawLine from '../CustomLine/CustomLine.js';
 import { EditPanel } from '../EditPanel/EditPanel.js';
+import DrawCircle from '../CustomCircle/CutsomCircle.js';
 
 function DrawSegments() {
   const StageRef = useRef(null);
   const lineLayerRef = useRef(null);
   const circleLayerRef = useRef(null);
   const [hullPointsState, setHullPointsState] = useState(massHullPoints);
+  const [circlePointState, setCirclePointState] = useState([]);
   const [shouldDelete, setShouldDelete] = useState(false);
 
   function deleteHandler(){
@@ -23,11 +25,23 @@ function DrawSegments() {
 			}
 		  });
 		});
-		console.log(newHullState);
+		setHullPointsState(newHullState)
 		setShouldDelete((prevState) => !prevState);
   }
+  function extractCirclePoints(hullPointsState){
+	const extractedPoints = [];
+	hullPointsState.forEach((hullGroup,hullGroupIndex)=>{
+		extractedPoints[hullGroupIndex] = [];
+		hullGroup.forEach((points,index)=>{
+			extractedPoints[hullGroupIndex].push([...points.slice(0,2)]);
+		})
+	})
+	setCirclePointState(extractedPoints)
+  }
   useEffect(() => {
-    console.log(hullPointsState);
+	extractCirclePoints(hullPointsState);
+    console.log(circlePointState);
+	console.log(hullPointsState);
   }, [hullPointsState]);
   return (
     <>
@@ -44,36 +58,34 @@ function DrawSegments() {
                   key={eachIndex}
                   points={eachGroupPoints}
                   group={eachHullIndex}
-                  StageRef={StageRef}
-                  setHullPointsState={setHullPointsState}
-                  shouldDelete={shouldDelete}
                 />
               ))}
             </Group>
           ))}
         </Layer>
-        {/* <Layer ref={circleLayerRef} name='circle'>
-          {massHullPoints.map((eachHullPoints, eachHullIndex) => (
-            <Group key={eachHullIndex}>
-              {eachHullPoints.map(
-                (eachGroupPoints, eachIndex, eachGroupArr) => (
+        <Layer ref={circleLayerRef} name='circle'>
+          {circlePointState.map((groupPoints, groupIndex) => (
+            <Group key={groupIndex} name={`seg${groupIndex+1}`}>
+              {groupPoints.map(
+                (points, index) => (
                   <DrawCircle
-                    key={eachIndex}
-                    points={[eachGroupPoints, eachGroupArr[eachIndex + 1]]}
-                    group={eachHullIndex}
+                    key={index}
+                    points={[...points]}
+                    group={groupIndex}
                     StageRef={StageRef}
-                    circleIndex={`${eachIndex}${eachHullIndex}`}
                     shouldDelete={shouldDelete}
+					setHullPointsState={setHullPointsState}
+					setCirclePoints={setCirclePointState}
                   />
                 )
               )}
             </Group>
           ))}
-        </Layer> */}
+        </Layer>
       </Stage>
       <input
         type='button'
-        value={`${shouldDelete ? 'disable' : 'enable'} delete points`}
+        value={`${shouldDelete ? 'Disable' : 'Enable'} delete points`}
         onClick={deleteHandler}
       />
 	  <EditPanel massHullPoints={hullPointsState} stageRef={StageRef}/>
